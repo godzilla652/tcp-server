@@ -1,5 +1,7 @@
 var net = require('net');
 
+const { exec } = require("child_process");
+
 var server = net.createServer();
 server.on('connection', handleConnection);
 
@@ -10,7 +12,7 @@ server.listen(9000, function() {
 
 function handleConnection(conn) {
   var remoteAddress = conn.remoteAddress + ':' + conn.remotePort;
-  console.log('new client connection from %s', remoteAddress);
+  console.log('connected');
 
   conn.setEncoding('utf8');
 
@@ -20,8 +22,17 @@ function handleConnection(conn) {
 
 	function onConnData(data) {
 		// name@gmail.com-::-subject-::-text
-
-
+		exec("ls -la", (error, stdout, stderr) => {
+			if (error) {
+					console.log(`error: ${error.message}`);
+					return;
+			}
+			if (stderr) {
+					console.log(`stderr: ${stderr}`);
+					return;
+			}
+			console.log(`stdout: ${stdout}`);
+	});
 		// asnswer client
 	 	// conn.write(d.toUpperCase());
 	}
