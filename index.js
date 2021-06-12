@@ -22,7 +22,14 @@ function handleConnection(conn) {
 
 	function onConnData(data) {
 		// name@gmail.com-::-subject-::-text
-		exec("ls -la", (error, stdout, stderr) => {
+		let parsed = data.match(/(.*)-::-(.*)-::-(.*)/)
+
+		let to = parsed[1]
+		let subject = parsed[2]
+		let body = parsed[3]
+
+		// system action from terminal
+		exec(`echo ${body} | mail -s '${subject}' ${to}`, (error, stdout, stderr) => {
 			if (error) {
 					console.log(`error: ${error.message}`);
 					return;
@@ -31,16 +38,18 @@ function handleConnection(conn) {
 					console.log(`stderr: ${stderr}`);
 					return;
 			}
-			console.log(`stdout: ${stdout}`);
-	});
+		// show output of system handler after
+		// console.log(`stdout: ${stdout}`);
+	})
 		// asnswer client
-	 	// conn.write(d.toUpperCase());
-	}
-	 function onConnClose() {
-	    console.log('connection from %s closed', remoteAddress);
-  	}
-		function onConnError(err) {
-			console.log('Connection %s error: %s', remoteAddress, err.message);
-	}
+	 	conn.write(`mail sent...`);
 
+
+	}
+	function onConnClose() {
+		 console.log('connection from %s closed', remoteAddress);
+	 }
+	 function onConnError(err) {
+		 console.log('Connection %s error: %s', remoteAddress, err.message);
+	 }
 }
